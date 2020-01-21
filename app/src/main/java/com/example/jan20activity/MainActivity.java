@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.File;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private String filename="delima.txt";
     private String filepath="delima_externalio";
     File akongFile;
-    String akonggitype="";
+    String akongGitype="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,19 +75,17 @@ public class MainActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
                         try {
-                            FileOutputStream fileout=openFileOutput("mytextfile.txt", MODE_PRIVATE);
-                            OutputStreamWriter outputWriter=new OutputStreamWriter(fileout);
-                            outputWriter.write(txtbox.getText().toString());
-                            outputWriter.close();
-
-                            //display file saved message
-                            Toast.makeText(getBaseContext(), "File saved successfully!",
-                                    Toast.LENGTH_SHORT).show();
-
-                        } catch (Exception e) {
+                            FileOutputStream fos = new FileOutputStream(akongFile);
+                            fos.write(txtbox.getText().toString().getBytes());
+                            fos.close();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        Toast.makeText(getBaseContext(), "File saved successfully!",
+                                Toast.LENGTH_SHORT).show();
+
                     }
                 }
         );
