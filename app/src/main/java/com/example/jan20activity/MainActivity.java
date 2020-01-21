@@ -11,6 +11,7 @@ import android.widget.Toast;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
+import android.os.Environment;
 
 public class MainActivity extends AppCompatActivity {
     static final int READ_BLOCK_SIZE = 100;
@@ -84,6 +85,26 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
+        if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
+            btnWri.setEnabled(false);
+        }
 
     }
+
+    private static boolean isExternalStorageReadOnly() {
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
+            return true;
+        }
+        return false;
+    }
+
+    private static boolean isExternalStorageAvailable() {
+        String extStorageState = Environment.getExternalStorageState();
+        if (Environment.MEDIA_MOUNTED.equals(extStorageState)) {
+            return true;
+        }
+        return false;
+    }
+
 }
