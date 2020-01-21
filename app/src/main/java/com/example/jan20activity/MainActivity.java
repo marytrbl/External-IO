@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.io.File;
 import android.widget.Toast;
 import android.view.View;
 import android.widget.EditText;
@@ -15,6 +16,11 @@ import android.os.Environment;
 
 public class MainActivity extends AppCompatActivity {
     static final int READ_BLOCK_SIZE = 100;
+
+    private String filename="delima.txt";
+    private String filepath="delima_externalio";
+    File akongFile;
+    String akonggitype="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,5 +113,5 @@ public class MainActivity extends AppCompatActivity {
         return false;
     }
 
-    
+
 }
