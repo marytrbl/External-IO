@@ -1,27 +1,30 @@
 package com.example.jan20activity;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.File;
 import android.widget.Toast;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Button;
 import android.os.Environment;
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.IOException;
+
 
 public class MainActivity extends AppCompatActivity {
+
     static final int READ_BLOCK_SIZE = 100;
 
-    private String filename="delima.txt";
-    private String filepath="delima_externalio";
-    File akongFile;
-    String akongGitype="";
+    private String filename = "Delima.txt";
+    private String filepath = "Delima_ExternalIO";
+    File myFile;
+    String myInput = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,12 @@ public class MainActivity extends AppCompatActivity {
         final Button btnClr = findViewById(R.id.btnClr);
         final Button btnRea = findViewById(R.id.btnRea);
         final Button btnWri = findViewById(R.id.btnWri);
+
+        if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
+            btnWri.setEnabled(false);
+        }else {
+            myFile = new File(getExternalFilesDir(filepath), filename);
+        }
 
         btnClr.setOnClickListener(
                 new View.OnClickListener() {
@@ -47,26 +56,20 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         try {
-                            FileInputStream fileIn=openFileInput("mytextfile.txt");
-                            InputStreamReader InputRead= new InputStreamReader(fileIn);
-
-                            char[] inputBuffer= new char[READ_BLOCK_SIZE];
-                            String s="";
-                            int charRead;
-
-                            while ((charRead=InputRead.read(inputBuffer))>0) {
-                                // char to string conversion
-                                String readstring=String.copyValueOf(inputBuffer,0,charRead);
-                                s +=readstring;
+                            FileInputStream fis = new FileInputStream(myFile);
+                            DataInputStream in = new DataInputStream(fis);
+                            BufferedReader br =
+                                    new BufferedReader(new InputStreamReader(in));
+                            String strLine;
+                            while ((strLine = br.readLine()) != null) {
+                                myInput = myInput + strLine;
                             }
-                            InputRead.close();
-                            txtbox.setText(s);
-
-
-                        } catch (Exception e) {
+                            in.close();
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
-
+                        txtbox.setText(myInput);
+                        Toast.makeText(getBaseContext(), "File data retrieved from External Storage.", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -75,28 +78,27 @@ public class MainActivity extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-
                         try {
-                            FileOutputStream fos = new FileOutputStream(akongFile);
+                            FileOutputStream fos = new FileOutputStream(myFile);
                             fos.write(txtbox.getText().toString().getBytes());
                             fos.close();
+                            Toast.makeText(getBaseContext(), "File saved successfully!", Toast.LENGTH_SHORT).show();
+
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        Toast.makeText(getBaseContext(), "File saved successfully!",
-                                Toast.LENGTH_SHORT).show();
-
                     }
                 }
         );
 
         if (!isExternalStorageAvailable() || isExternalStorageReadOnly()) {
             btnWri.setEnabled(false);
+        }else {
+            myFile = new File(getExternalFilesDir(filepath), filename);
         }
-
     }
 
-    private static boolean isExternalStorageReadOnly() {
+    public static boolean isExternalStorageReadOnly() {
         String extStorageState = Environment.getExternalStorageState();
         if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(extStorageState)) {
             return true;
@@ -111,6 +113,4 @@ public class MainActivity extends AppCompatActivity {
         }
         return false;
     }
-
-
 }
